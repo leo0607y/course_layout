@@ -217,9 +217,9 @@ document.getElementById('goalDirection').addEventListener('change', () => {
         drawField();
         return;
     }
-    
+
     const DISTANCE = 1000;
-    
+
     switch (direction) {
         case 'right':
             goalPoint = { x: startPoint.x + DISTANCE, y: startPoint.y };
@@ -234,7 +234,7 @@ document.getElementById('goalDirection').addEventListener('change', () => {
             goalPoint = { x: startPoint.x, y: startPoint.y - DISTANCE };
             break;
     }
-    
+
     drawField();
 });// 初期化
 drawField();

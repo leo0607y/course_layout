@@ -45,13 +45,23 @@ h1 {
     align-items: center;
     gap: 8px;
     font-weight: bold;
+    color: #333;
 }
 
 .controls input[type="number"] {
-    width: 60px;
-    padding: 5px;
+    width: 80px;
+    padding: 8px;
     border: 1px solid #ccc;
     border-radius: 4px;
+    font-size: 14px;
+}
+
+.controls select {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    min-width: 200px;
 }
 
 .controls button {
