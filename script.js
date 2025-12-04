@@ -8,6 +8,7 @@ const BOARD_HEIGHT = 1350;
 let horizontalCount = 1;
 let verticalCount = 1;
 let startPoint = null; // STARTポイント {x, y}
+let goalPoint = null; // GOALポイント {x, y}
 
 // 盤面を描画
 function drawField() {
@@ -41,6 +42,11 @@ function drawField() {
         drawStartPoint(startPoint.x, startPoint.y, totalHeight);
     }
 
+    // GOALポイントを描画
+    if (goalPoint) {
+        drawGoalPoint(goalPoint.x, goalPoint.y, totalHeight);
+    }
+
     // キャンバスのスタイルを更新してスクロールなしで表示
     updateCanvasScale();
 }
@@ -62,6 +68,25 @@ function drawStartPoint(x, y, totalHeight) {
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText('START', x, canvasY);
+}
+
+// GOALポイントを描画
+function drawGoalPoint(x, y, totalHeight) {
+    // 左下を(0,0)とするため、Y座標を反転
+    const canvasY = totalHeight - y;
+
+    // 青い丸を描画
+    ctx.fillStyle = '#0000ff';
+    ctx.beginPath();
+    ctx.arc(x, canvasY, 15, 0, Math.PI * 2);
+    ctx.fill();
+
+    // "GOAL"テキストを描画
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 10px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('GOAL', x, canvasY);
 }
 
 // 座標グリッドを描画（左下を(0,0)とする）
@@ -110,20 +135,106 @@ function updateCanvasScale() {
     // スケールを適用（CSSで自動的に調整されるため、明示的な設定は不要）
 }
 
-// 更新ボタンのイベント
-document.getElementById('updateButton').addEventListener('click', () => {
-    horizontalCount = parseInt(document.getElementById('horizontalCount').value);
-    verticalCount = parseInt(document.getElementById('verticalCount').value);
+// 盤面サイズ変更のイベント
+document.getElementById('horizontalCount').addEventListener('input', () => {
+    horizontalCount = parseInt(document.getElementById('horizontalCount').value) || 1;
+    updateGoalDirections();
     drawField();
 });
 
-// START追加ボタンのイベント
-document.getElementById('addStartButton').addEventListener('click', () => {
-    const x = parseInt(document.getElementById('startX').value);
-    const y = parseInt(document.getElementById('startY').value);
+document.getElementById('verticalCount').addEventListener('input', () => {
+    verticalCount = parseInt(document.getElementById('verticalCount').value) || 1;
+    updateGoalDirections();
+    drawField();
+});
+
+// START座標変更のイベント
+document.getElementById('startX').addEventListener('input', () => {
+    const x = parseInt(document.getElementById('startX').value) || 0;
+    const y = parseInt(document.getElementById('startY').value) || 0;
     startPoint = { x, y };
+    updateGoalDirections();
     drawField();
 });
 
-// 初期化
+document.getElementById('startY').addEventListener('input', () => {
+    const x = parseInt(document.getElementById('startX').value) || 0;
+    const y = parseInt(document.getElementById('startY').value) || 0;
+    startPoint = { x, y };
+    updateGoalDirections();
+    drawField();
+});
+
+// GOAL方向のプルダウンを更新
+function updateGoalDirections() {
+    const select = document.getElementById('goalDirection');
+    select.innerHTML = '<option value="">選択してください</option>';
+
+    if (!startPoint) return;
+
+    const totalWidth = BOARD_WIDTH * horizontalCount;
+    const totalHeight = BOARD_HEIGHT * verticalCount;
+    const DISTANCE = 1000; // 1000mm
+
+    // 右側 (X軸正の方向)
+    if (startPoint.x + DISTANCE <= totalWidth) {
+        const option = document.createElement('option');
+        option.value = 'right';
+        option.textContent = `右側 (X: ${startPoint.x + DISTANCE}, Y: ${startPoint.y})`;
+        select.appendChild(option);
+    }
+
+    // 左側 (X軸負の方向)
+    if (startPoint.x - DISTANCE >= 0) {
+        const option = document.createElement('option');
+        option.value = 'left';
+        option.textContent = `左側 (X: ${startPoint.x - DISTANCE}, Y: ${startPoint.y})`;
+        select.appendChild(option);
+    }
+
+    // 上側 (Y軸正の方向)
+    if (startPoint.y + DISTANCE <= totalHeight) {
+        const option = document.createElement('option');
+        option.value = 'up';
+        option.textContent = `上側 (X: ${startPoint.x}, Y: ${startPoint.y + DISTANCE})`;
+        select.appendChild(option);
+    }
+
+    // 下側 (Y軸負の方向)
+    if (startPoint.y - DISTANCE >= 0) {
+        const option = document.createElement('option');
+        option.value = 'down';
+        option.textContent = `下側 (X: ${startPoint.x}, Y: ${startPoint.y - DISTANCE})`;
+        select.appendChild(option);
+    }
+}
+
+// GOAL方向選択のイベント
+document.getElementById('goalDirection').addEventListener('change', () => {
+    const direction = document.getElementById('goalDirection').value;
+    if (!direction || !startPoint) {
+        goalPoint = null;
+        drawField();
+        return;
+    }
+    
+    const DISTANCE = 1000;
+    
+    switch (direction) {
+        case 'right':
+            goalPoint = { x: startPoint.x + DISTANCE, y: startPoint.y };
+            break;
+        case 'left':
+            goalPoint = { x: startPoint.x - DISTANCE, y: startPoint.y };
+            break;
+        case 'up':
+            goalPoint = { x: startPoint.x, y: startPoint.y + DISTANCE };
+            break;
+        case 'down':
+            goalPoint = { x: startPoint.x, y: startPoint.y - DISTANCE };
+            break;
+    }
+    
+    drawField();
+});// 初期化
 drawField();
