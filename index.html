@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ロボトレース コースレイアウト補助ツール</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>ロボトレース コースレイアウト補助ツール</h1>
+        <div class="controls">
+            <label>横: <input type="number" id="horizontalCount" min="1" max="10" value="1"> 枚</label>
+            <label>縦: <input type="number" id="verticalCount" min="1" max="10" value="1"> 枚</label>
+            <button id="updateButton">更新</button>
+        </div>
+        <div class="controls">
+            <label>START X: <input type="number" id="startX" min="0" step="10" value="0"> mm</label>
+            <label>START Y: <input type="number" id="startY" min="0" step="10" value="0"> mm</label>
+            <button id="addStartButton">START追加</button>
+        </div>
+        <div class="field-wrapper">
+            <canvas id="courseField"></canvas>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>
